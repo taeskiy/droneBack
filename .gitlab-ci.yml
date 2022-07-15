@@ -1,0 +1,14 @@
+stages:
+  - deploy
+
+.build: &build |
+    docker compose -f docker-compose_prod.yml up --build -d --force-recreate
+
+deploy:master:
+  stage: deploy
+  script:
+    - *build
+  tags:
+    - drone_deploy
+  only:
+    - master

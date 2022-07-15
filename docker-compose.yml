@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  drone_db:
+    image: postgres:13
+    container_name: drone_db
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - "postgres:/var/lib/postgresql/data"
+    networks:
+      - drone_net
+
+  drone_web:
+    build: ./
+    container_name: drone_web
+    env_file:
+      - .env
+    restart: always
+    command: bash -c "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - ./:/app
+    ports:
+      - "8006:8000"
+    depends_on:
+      - drone_db
+    networks:
+      - drone_net
+    tty: true
+
+
+networks:
+  drone_net:
+
+volumes:
+  postgres:
